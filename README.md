@@ -3,6 +3,15 @@ Writing a Linux Wifi Driver
 
 Cause why not.
 
+Test
+----
+
+Build module: `make`
+
+Load module: `sudo insmod wifi_example.ko`
+
+Remove module: `sudo rmmod wifi_example`
+
 References
 ----------
 
