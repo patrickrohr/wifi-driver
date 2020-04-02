@@ -1,0 +1,8 @@
+# ignore build files
+*.cmd
+*.ko
+*.mod
+*.mod.*
+*.o
+*.symvers
+*.order
