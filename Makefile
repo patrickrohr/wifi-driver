@@ -1,5 +1,5 @@
-obj-m += wifi_example.o
-# wifi_example-objs := main.o
+obj-m += wifi_driver.o
+wifi_driver-objs := device.o config.o netdev.o wiphy.o
 ccflags-y += -g -DDEBUG -std=gnu99 -Wno-declaration-after-statement
 
 all:
@@ -7,4 +7,3 @@ all:
 
 clean:
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
-
