@@ -19,41 +19,41 @@ struct netdev_priv_data {
 };
 
 // Function Declarations
-static int wl_cfg_add_key(struct wiphy *wiphy, struct net_device *netdev,
+static int _cb_add_key(struct wiphy *wiphy, struct net_device *netdev,
 			  u8 key_index, bool pairwise, const u8 *mac_addr,
 			  struct key_params *params);
 
-static int wl_cfg_get_key(struct wiphy *wiphy, struct net_device *netdev,
+static int _cb_get_key(struct wiphy *wiphy, struct net_device *netdev,
 			  u8 key_index, bool pairwise, const u8 *mac_addr,
 			  void *cookie,
 			  void (*callback)(void *cookie, struct key_params *));
 
-static int wl_cfg_set_default_key(struct wiphy *wiphy,
+static int _cb_set_default_key(struct wiphy *wiphy,
 				  struct net_device *netdev, u8 key_index,
 				  bool unicast, bool multicast);
 
-static int wl_cfg_del_key(struct wiphy *wiphy, struct net_device *netdev,
+static int _cb_del_key(struct wiphy *wiphy, struct net_device *netdev,
 			  u8 key_index, bool pairwise, const u8 *mac_addr);
 
-static int wl_cfg_get_station(struct wiphy *wiphy, struct net_device *netdev,
+static int _cb_get_station(struct wiphy *wiphy, struct net_device *netdev,
 			      const u8 *mac, struct station_info *sinfo);
 
-static int wl_cfg_dump_station(struct wiphy *wiphy, struct net_device *netdev,
+static int _cb_dump_station(struct wiphy *wiphy, struct net_device *netdev,
 			       int idx, u8 *mac, struct station_info *sinfo);
 
-static int wl_cfg_scan(struct wiphy *wiphy,
+static int _cb_scan(struct wiphy *wiphy,
 		       struct cfg80211_scan_request *request);
 
-static int wl_cfg_connect(struct wiphy *wiphy, struct net_device *netdev,
+static int _cb_connect(struct wiphy *wiphy, struct net_device *netdev,
 			  struct cfg80211_connect_params *sme);
 
-static int wl_cfg_disconnect(struct wiphy *wiphy, struct net_device *netdev,
+static int _cb_disconnect(struct wiphy *wiphy, struct net_device *netdev,
 			     u16 reason_code);
 
-static int wl_cfg_set_power_mgmt(struct wiphy *wiphy, struct net_device *netdev,
+static int _cb_set_power_mgmt(struct wiphy *wiphy, struct net_device *netdev,
 				 bool enabled, int timeout);
 
-static void wl_cfg_mgmt_frame_register(struct wiphy *wiphy,
+static void _cb_mgmt_frame_register(struct wiphy *wiphy,
 				       struct wireless_dev *wdev,
 				       u16 frame_type, bool reg);
 
@@ -72,59 +72,6 @@ static struct netdev_priv_data *netdev_get_priv(struct net_device *netdev);
 static struct wl_handle g_handle = {};
 
 // Data Structure Definitions
-static struct cfg80211_ops g_config_ops = {
-	.add_key = wl_cfg_add_key,
-	.get_key = wl_cfg_get_key,
-	.del_key = wl_cfg_del_key,
-	.set_default_key = wl_cfg_set_default_key,
-	.get_station = wl_cfg_get_station,
-	.dump_station = wl_cfg_dump_station,
-	.scan = wl_cfg_scan,
-	.connect = wl_cfg_connect,
-	.disconnect = wl_cfg_disconnect,
-	.set_power_mgmt = wl_cfg_set_power_mgmt,
-	.mgmt_frame_register = wl_cfg_mgmt_frame_register,
-};
-
-static struct ieee80211_channel wl_channels_2ghz[] = { {
-	.band = NL80211_BAND_2GHZ,
-	.hw_value = 6,
-	.center_freq = 2437,
-} };
-
-/* Array of supported channel bitrates. Minimum requirements for 2GHz. */
-/* clang-format off */
-static struct ieee80211_rate wl_bitrates_2ghz[] = {
-        {
-                .bitrate = 10,
-                .hw_value = 0x1,
-        },
-        {
-                .bitrate = 20,
-                .hw_value = 0x2,
-        },
-        {
-                .bitrate = 55,
-                .hw_value = 0x4,
-        },
-        {
-                .bitrate = 110,
-                .hw_value = 0x8,
-        }
-};
-/* clang-format on */
-
-static struct ieee80211_supported_band wl_band_2ghz = {
-	.ht_cap.cap = IEEE80211_HT_CAP_SGI_20, /* 20 width band */
-	.ht_cap.ht_supported = false,
-
-	.channels = wl_channels_2ghz,
-	.n_channels = ARRAY_SIZE(wl_channels_2ghz),
-
-	.bitrates = wl_bitrates_2ghz,
-	.n_bitrates = ARRAY_SIZE(wl_bitrates_2ghz),
-};
-
 static const struct net_device_ops wl_netdev_ops = {
 	.ndo_open = NULL,
 	.ndo_stop = NULL,
@@ -134,74 +81,85 @@ static const struct net_device_ops wl_netdev_ops = {
 };
 
 // Function Definitions
-static int wl_cfg_add_key(struct wiphy *wiphy, struct net_device *netdev,
+static int _cb_add_key(struct wiphy *wiphy, struct net_device *netdev,
 			  u8 key_index, bool pairwise, const u8 *mac_addr,
 			  struct key_params *params)
 {
+        printk(KERN_INFO "_cb_add_key called\n");
 	return 0;
 }
 
-static int wl_cfg_get_key(struct wiphy *wiphy, struct net_device *netdev,
+static int _cb_get_key(struct wiphy *wiphy, struct net_device *netdev,
 			  u8 key_index, bool pairwise, const u8 *mac_addr,
 			  void *cookie,
 			  void (*callback)(void *cookie, struct key_params *))
 {
+        printk(KERN_INFO "_cb_get_key called\n");
 	return 0;
 }
 
-static int wl_cfg_del_key(struct wiphy *wiphy, struct net_device *netdev,
+static int _cb_del_key(struct wiphy *wiphy, struct net_device *netdev,
 			  u8 key_index, bool pairwise, const u8 *mac_addr)
 {
+        printk(KERN_INFO "_cb_del_key called\n");
 	return 0;
 }
 
-static int wl_cfg_set_default_key(struct wiphy *wiphy,
+static int _cb_set_default_key(struct wiphy *wiphy,
 				  struct net_device *netdev, u8 key_index,
 				  bool unicast, bool multicast)
 {
+        printk(KERN_INFO "_cb_set_default_key called\n");
 	return 0;
 }
 
-static int wl_cfg_get_station(struct wiphy *wiphy, struct net_device *netdev,
+static int _cb_get_station(struct wiphy *wiphy, struct net_device *netdev,
 			      const u8 *mac, struct station_info *sinfo)
 {
+        printk(KERN_INFO "_cb_get_station called\n");
 	return 0;
 }
 
-static int wl_cfg_dump_station(struct wiphy *wiphy, struct net_device *netdev,
+static int _cb_dump_station(struct wiphy *wiphy, struct net_device *netdev,
 			       int idx, u8 *mac, struct station_info *sinfo)
 {
+        printk(KERN_INFO "_cb_dump_station called\n");
 	return 0;
 }
 
-static int wl_cfg_scan(struct wiphy *wiphy,
+static int _cb_scan(struct wiphy *wiphy,
 		       struct cfg80211_scan_request *request)
 {
+        printk(KERN_INFO "_cb_scan called\n");
 	return 0;
 }
 
-static int wl_cfg_connect(struct wiphy *wiphy, struct net_device *netdev,
+static int _cb_connect(struct wiphy *wiphy, struct net_device *netdev,
 			  struct cfg80211_connect_params *sme)
 {
+        printk(KERN_INFO "_cb_connect called\n");
 	return 0;
 }
 
-static int wl_cfg_disconnect(struct wiphy *wiphy, struct net_device *netdev,
+static int _cb_disconnect(struct wiphy *wiphy, struct net_device *netdev,
 			     u16 reason_code)
 {
+        printk(KERN_INFO "_cb_disconnect called\n");
 	return 0;
 }
 
-static int wl_cfg_set_power_mgmt(struct wiphy *wiphy, struct net_device *netdev,
+static int _cb_set_power_mgmt(struct wiphy *wiphy, struct net_device *netdev,
 				 bool enabled, int timeout)
 {
+        printk(KERN_INFO "set_power mgmt called\n");
 	return 0;
 }
 
-static void wl_cfg_mgmt_frame_register(struct wiphy *wiphy,
+static void _cb_mgmt_frame_register(struct wiphy *wiphy,
 				       struct wireless_dev *wdev,
 				       u16 frame_type, bool reg)
 {
+        printk(KERN_INFO "mgmt frame register called\n");
 }
 
 static netdev_tx_t wl_start_tx(struct sk_buff *skb, struct net_device *dev)
@@ -211,7 +169,30 @@ static netdev_tx_t wl_start_tx(struct sk_buff *skb, struct net_device *dev)
 	return NETDEV_TX_OK; // or NETDEV_TX_BUSY
 }
 
-// TODO: probably shouldn't be executed inside __init, but in some kind of probe function.
+// TODO: probably shouldn't be executed inside __init, but in some kind of 
+// probe function.
+// TODO: refactor
+// At this point we know we have a netdevice, that contains a wdev structure
+// and a wiphy structure. So I should be able to create something like a
+// netdev_helper / netdev_factory, a wdev_helper, and a wiphy_helper.
+//
+// Looking at ath6kl:
+// - netdev is initialized and registered inside iface_add inside some
+// cfg80211 callback.
+// - wiphy is created inside the cfg80211 create function which is called from
+// core create, which in turn is called from a sdio / usb probe. core create also
+// receives the device.
+//
+// - there is also a core init function, which seems to turn on the device 
+// (ath6kl_hif_power_on?) and load the firmware.
+//
+// usb.c and sdio.c contain function related to interacting with device.
+//
+// Looks like all of this starts inside sdio.c / usb.c where the sdio driver
+// is registered (inside an __init).
+//
+// My intel card is connected via PCIe. Looks like that could be a tiny bit more
+// complex. :)
 static int __init wl_init(void)
 {
 	printk(KERN_INFO "wifi init called\n");

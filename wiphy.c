@@ -110,27 +110,28 @@ int pr_wiphy_init(struct pr_device_handle* handle)
     
     if (!handle->wiphy) {
         printk(KERN_ALERT "Could not allocate wiphy device\n");
-        return 1; // TODO: error codes
+        goto error_alloc;
     }
     
     _pr_wiphy_configure(handle->wiphy);
 
     if (wiphy_register(handle->wiphy)) { 
         printk(KERN_ALERT "Could not register wiphy\n");
-
-        wiphy_free(handle->wiphy);
-        handle->wiphy = NULL;
-        return 1; // error
+        goto error_register;
     }
-    return 0; // success
+    // success
+    return 0;
+
+error_register:
+    wiphy_free(handle->wiphy);
+error_alloc:
+    return 1;
 }
 
 void pr_wiphy_exit(struct pr_device_handle* handle)
 {
-    if (handle->wiphy) {
-        wiphy_unregister(handle->wiphy);
-        wiphy_free(handle->wiphy);
-    }
+    wiphy_unregister(handle->wiphy);
+    wiphy_free(handle->wiphy);
 }
 
 static void _pr_wiphy_configure(struct wiphy* wiphy)
