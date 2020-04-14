@@ -5,47 +5,44 @@
 #include "wiphy.h"
 #include <net/cfg80211.h>
 
-static void _pr_wiphy_configure(struct wiphy* wiphy);
+static void _pr_wiphy_configure(struct wiphy *wiphy);
 
 // cfg80211 callback functions
 static int _cb_add_key(struct wiphy *wiphy, struct net_device *netdev,
-			  u8 key_index, bool pairwise, const u8 *mac_addr,
-			  struct key_params *params);
+		       u8 key_index, bool pairwise, const u8 *mac_addr,
+		       struct key_params *params);
 
 static int _cb_get_key(struct wiphy *wiphy, struct net_device *netdev,
-			  u8 key_index, bool pairwise, const u8 *mac_addr,
-			  void *cookie,
-			  void (*callback)(void *cookie, struct key_params *));
+		       u8 key_index, bool pairwise, const u8 *mac_addr,
+		       void *cookie,
+		       void (*callback)(void *cookie, struct key_params *));
 
-static int _cb_set_default_key(struct wiphy *wiphy,
-				  struct net_device *netdev, u8 key_index,
-				  bool unicast, bool multicast);
+static int _cb_set_default_key(struct wiphy *wiphy, struct net_device *netdev,
+			       u8 key_index, bool unicast, bool multicast);
 
 static int _cb_del_key(struct wiphy *wiphy, struct net_device *netdev,
-			  u8 key_index, bool pairwise, const u8 *mac_addr);
+		       u8 key_index, bool pairwise, const u8 *mac_addr);
 
 static int _cb_get_station(struct wiphy *wiphy, struct net_device *netdev,
-			      const u8 *mac, struct station_info *sinfo);
+			   const u8 *mac, struct station_info *sinfo);
 
 static int _cb_dump_station(struct wiphy *wiphy, struct net_device *netdev,
-			       int idx, u8 *mac, struct station_info *sinfo);
+			    int idx, u8 *mac, struct station_info *sinfo);
 
-static int _cb_scan(struct wiphy *wiphy,
-		       struct cfg80211_scan_request *request);
+static int _cb_scan(struct wiphy *wiphy, struct cfg80211_scan_request *request);
 
 static int _cb_connect(struct wiphy *wiphy, struct net_device *netdev,
-			  struct cfg80211_connect_params *sme);
+		       struct cfg80211_connect_params *sme);
 
 static int _cb_disconnect(struct wiphy *wiphy, struct net_device *netdev,
-			     u16 reason_code);
+			  u16 reason_code);
 
 static int _cb_set_power_mgmt(struct wiphy *wiphy, struct net_device *netdev,
-				 bool enabled, int timeout);
+			      bool enabled, int timeout);
 
 static void _cb_mgmt_frame_register(struct wiphy *wiphy,
-				       struct wireless_dev *wdev,
-				       u16 frame_type, bool reg);
-
+				    struct wireless_dev *wdev, u16 frame_type,
+				    bool reg);
 
 static struct cfg80211_ops g_config_ops = {
 	.add_key = _cb_add_key,
@@ -102,127 +99,124 @@ static struct ieee80211_supported_band wl_band_2ghz = {
 	.n_bitrates = ARRAY_SIZE(wl_bitrates_2ghz),
 };
 
-
-int pr_wiphy_init(struct pr_device_handle* handle)
+int pr_wiphy_init(struct pr_device_handle *handle)
 {
-    unsigned priv_size = 0; 
-    handle->wiphy = wiphy_new(&g_config_ops, priv_size);
-    
-    if (!handle->wiphy) {
-        printk(KERN_ALERT "Could not allocate wiphy device\n");
-        goto error_alloc;
-    }
-    
-    _pr_wiphy_configure(handle->wiphy);
+	unsigned priv_size = 0;
+	handle->wiphy = wiphy_new(&g_config_ops, priv_size);
 
-    if (wiphy_register(handle->wiphy)) { 
-        printk(KERN_ALERT "Could not register wiphy\n");
-        goto error_register;
-    }
-    // success
-    return 0;
+	if (!handle->wiphy) {
+		printk(KERN_ALERT "Could not allocate wiphy device\n");
+		goto error_alloc;
+	}
+
+	_pr_wiphy_configure(handle->wiphy);
+
+	if (wiphy_register(handle->wiphy)) {
+		printk(KERN_ALERT "Could not register wiphy\n");
+		goto error_register;
+	}
+	// success
+	return 0;
 
 error_register:
-    wiphy_free(handle->wiphy);
+	wiphy_free(handle->wiphy);
 error_alloc:
-    return 1;
+	return 1;
 }
 
-void pr_wiphy_exit(struct pr_device_handle* handle)
+void pr_wiphy_exit(struct pr_device_handle *handle)
 {
-    wiphy_unregister(handle->wiphy);
-    wiphy_free(handle->wiphy);
+	wiphy_unregister(handle->wiphy);
+	wiphy_free(handle->wiphy);
 }
 
-static void _pr_wiphy_configure(struct wiphy* wiphy)
+static void _pr_wiphy_configure(struct wiphy *wiphy)
 {
-    wiphy->interface_modes = BIT(NL80211_IFTYPE_STATION);
-    wiphy->bands[NL80211_BAND_2GHZ] = &wl_band_2ghz;
-    // Finding the answer to the world the universe and everything
-    // one SSID at a time.
-    wiphy->max_scan_ssids = 42;
+	wiphy->interface_modes = BIT(NL80211_IFTYPE_STATION);
+	wiphy->bands[NL80211_BAND_2GHZ] = &wl_band_2ghz;
+	// Finding the answer to the world the universe and everything
+	// one SSID at a time.
+	wiphy->max_scan_ssids = 42;
 }
 
 // cfg80211 callbacks
 static int _cb_add_key(struct wiphy *wiphy, struct net_device *netdev,
-			  u8 key_index, bool pairwise, const u8 *mac_addr,
-			  struct key_params *params)
+		       u8 key_index, bool pairwise, const u8 *mac_addr,
+		       struct key_params *params)
 {
-        printk(KERN_INFO "_cb_add_key called\n");
+	printk(KERN_INFO "_cb_add_key called\n");
 	return 0;
 }
 
 static int _cb_get_key(struct wiphy *wiphy, struct net_device *netdev,
-			  u8 key_index, bool pairwise, const u8 *mac_addr,
-			  void *cookie,
-			  void (*callback)(void *cookie, struct key_params *))
+		       u8 key_index, bool pairwise, const u8 *mac_addr,
+		       void *cookie,
+		       void (*callback)(void *cookie, struct key_params *))
 {
-        printk(KERN_INFO "_cb_get_key called\n");
+	printk(KERN_INFO "_cb_get_key called\n");
 	return 0;
 }
 
 static int _cb_del_key(struct wiphy *wiphy, struct net_device *netdev,
-			  u8 key_index, bool pairwise, const u8 *mac_addr)
+		       u8 key_index, bool pairwise, const u8 *mac_addr)
 {
-        printk(KERN_INFO "_cb_del_key called\n");
+	printk(KERN_INFO "_cb_del_key called\n");
 	return 0;
 }
 
-static int _cb_set_default_key(struct wiphy *wiphy,
-				  struct net_device *netdev, u8 key_index,
-				  bool unicast, bool multicast)
+static int _cb_set_default_key(struct wiphy *wiphy, struct net_device *netdev,
+			       u8 key_index, bool unicast, bool multicast)
 {
-        printk(KERN_INFO "_cb_set_default_key called\n");
+	printk(KERN_INFO "_cb_set_default_key called\n");
 	return 0;
 }
 
 static int _cb_get_station(struct wiphy *wiphy, struct net_device *netdev,
-			      const u8 *mac, struct station_info *sinfo)
+			   const u8 *mac, struct station_info *sinfo)
 {
-        printk(KERN_INFO "_cb_get_station called\n");
+	printk(KERN_INFO "_cb_get_station called\n");
 	return 0;
 }
 
 static int _cb_dump_station(struct wiphy *wiphy, struct net_device *netdev,
-			       int idx, u8 *mac, struct station_info *sinfo)
+			    int idx, u8 *mac, struct station_info *sinfo)
 {
-        printk(KERN_INFO "_cb_dump_station called\n");
+	printk(KERN_INFO "_cb_dump_station called\n");
 	return 0;
 }
 
-static int _cb_scan(struct wiphy *wiphy,
-		       struct cfg80211_scan_request *request)
+static int _cb_scan(struct wiphy *wiphy, struct cfg80211_scan_request *request)
 {
-        printk(KERN_INFO "_cb_scan called\n");
+	printk(KERN_INFO "_cb_scan called\n");
 	return 0;
 }
 
 static int _cb_connect(struct wiphy *wiphy, struct net_device *netdev,
-			  struct cfg80211_connect_params *sme)
+		       struct cfg80211_connect_params *sme)
 {
-        printk(KERN_INFO "_cb_connect called\n");
+	printk(KERN_INFO "_cb_connect called\n");
 	return 0;
 }
 
 static int _cb_disconnect(struct wiphy *wiphy, struct net_device *netdev,
-			     u16 reason_code)
+			  u16 reason_code)
 {
-        printk(KERN_INFO "_cb_disconnect called\n");
+	printk(KERN_INFO "_cb_disconnect called\n");
 	return 0;
 }
 
 static int _cb_set_power_mgmt(struct wiphy *wiphy, struct net_device *netdev,
-				 bool enabled, int timeout)
+			      bool enabled, int timeout)
 {
-        printk(KERN_INFO "set_power mgmt called\n");
+	printk(KERN_INFO "set_power mgmt called\n");
 	return 0;
 }
 
 static void _cb_mgmt_frame_register(struct wiphy *wiphy,
-				       struct wireless_dev *wdev,
-				       u16 frame_type, bool reg)
+				    struct wireless_dev *wdev, u16 frame_type,
+				    bool reg)
 {
-        printk(KERN_INFO "mgmt frame register called\n");
+	printk(KERN_INFO "mgmt frame register called\n");
 }
 
 static netdev_tx_t wl_start_tx(struct sk_buff *skb, struct net_device *dev)
@@ -231,4 +225,3 @@ static netdev_tx_t wl_start_tx(struct sk_buff *skb, struct net_device *dev)
 	printk(KERN_ALERT "Unimplemented wl_start_tx called\n");
 	return NETDEV_TX_OK; // or NETDEV_TX_BUSY
 }
-
